@@ -5,16 +5,16 @@ How to reproducde:
 
 1. Bring up all containers.
 
-```
-$ docker-compose up --build
-```
+  ```
+  $ docker-compose up --build
+  ```
 
 2. Wait until the Consul servers have elected a leader and Fabio has added the routes to the webservers.
 
 3. In another terminal, exec the Consul 1.5.2 container and reload consul.
 
-- `docker exec -it <ID> sh`
-- `consul reload`
+  - `$ docker exec -it <ID> sh`
+  - `$ consul reload`
 
    No routes will be removed from Fabio.
 
