@@ -1,0 +1,88 @@
+version: "3"
+
+services:
+
+  webserver-1:
+    build: ./webserver1
+    hostname: webserver1
+    ports:
+      - "8081:8081"
+    networks:
+      - consul-demo
+
+  webserver-2:
+    build: ./webserver2
+    hostname: webserver2
+    ports:
+      - "8082:8082"
+    networks:
+      - consul-demo
+
+  webserver-3:
+    build: ./webserver3
+    hostname: webserver3
+    ports:
+      - "8083:8083"
+    networks:
+      - consul-demo
+
+  consul-agent-1.5.2:
+    image: "consul:1.5.2"
+    volumes:
+      - "./healthcheck1.json:/consul/config/healthcheck1.json"
+    networks:
+      - consul-demo
+    command: "agent -retry-join consul-server-bootstrap -client 0.0.0.0"
+
+  consul-agent-1.5.3:
+    image: "consul:1.5.3"
+    volumes:
+      - "./healthcheck2.json:/consul/config/healthcheck2.json"
+    networks:
+      - consul-demo
+    command: "agent -retry-join consul-server-bootstrap -client 0.0.0.0"
+
+  consul-agent-1.6.4: &consul-agent
+    image: "consul:1.6.4"
+    volumes:
+      - "./healthcheck3.json:/consul/config/healthcheck3.json"
+    networks:
+      - consul-demo
+    command: "agent -retry-join consul-server-bootstrap -client 0.0.0.0"
+
+  consul-server-1: &consul-server
+    image: "consul:1.6.4"
+    networks:
+      - consul-demo
+    command: "agent -server -retry-interval 5s -retry-join consul-server-bootstrap -client 0.0.0.0"
+
+  consul-server-2:
+    <<: *consul-server
+
+  consul-server-bootstrap:
+    <<: *consul-server
+    networks:
+      - consul-demo
+    ports:
+      - "8400:8400"
+      - "8500:8500"
+      - "8600:8600"
+      - "8600:8600/udp"
+    command: "agent -server -retry-interval 5s -bootstrap-expect 3 -ui -client 0.0.0.0"
+
+  fabio-1:
+    image: "fabiolb/fabio:1.5.11-go1.11.5"
+    environment:
+      - registry_consul_addr=consul-server-bootstrap:8500
+    volumes:
+      - "./fabio.properties:/etc/fabio/fabio.properties"
+    ports:
+      - "9998:9998"
+      - "9999:9999"
+    networks:
+      - consul-demo
+    depends_on: 
+      - consul-server-bootstrap
+
+networks:
+  consul-demo:

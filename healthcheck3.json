@@ -1,0 +1,20 @@
+{
+    "services": [
+        {
+            "name": "webserver3",
+            "id": "webserver3",
+            "tags": [
+                "webserver3",
+                "urlprefix-webserver3/"
+            ],
+            "port": 8083,
+            "check": {
+                "id": "http",
+                "name": "HTTP on port 8083",
+                "tcp": "webserver-3:8083",
+                "interval": "60s",
+                "timeout": "5s"
+            }
+        }
+    ]
+}
