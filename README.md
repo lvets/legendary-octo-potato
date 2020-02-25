@@ -13,8 +13,10 @@ How to reproducde:
 
 3. In another terminal, exec the Consul 1.5.2 container and reload consul.
 
-    - `$ docker exec -it <ID> sh`
-    - `$ consul reload`
+    ```
+    $ docker exec -it <ID> sh
+    $ consul reload
+    ```
 
     No routes will be removed from Fabio.
 
